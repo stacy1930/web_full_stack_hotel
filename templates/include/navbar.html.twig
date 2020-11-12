@@ -7,13 +7,29 @@
 	<div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
 			<li class="nav-item active">
-				<a class="nav-link" href="#">Home
+				<a class="nav-link" href="{{path('default')}}">Home
 					<span class="sr-only">(current)</span>
 				</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="#">Features</a>
+				<a class="nav-link" href="{{path('user_index')}}">Users</a>
 			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="{{path('app_login')}}">Login</a>
+			</li>
+		</ul>
+
+		<ul class="navbar-nav push-right mx-5">
+			{% if app.user %}
+				<li class="nav-item">
+					<a class="nav-link" href="{{path('app_logout')}}">Deconnexion</a>
+				</li>
+
+			{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="{{path('app_login')}}">Login</a>
+				</li>
+			{% endif %}
 		</ul>
 
 	</div>

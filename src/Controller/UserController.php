@@ -40,7 +40,7 @@ class UserController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             // $user->setPassword($encoder->encodePassword($user, $user->getPassword()));
             // /** @var Role */
-            // foreach ($user->getRoles() as $role) {
+            // foreach ($user->getUserRoles()->toArray() as $role) {
             //     $role->addUser($user);
             //     $entityManager->persist($role);
             // }

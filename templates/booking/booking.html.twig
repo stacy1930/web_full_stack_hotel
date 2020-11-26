@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Booking{% endblock %}
+
+{% block body %}
+    {# {{ form(form) }} #}
+	{{form_start(form)}}
+		{{form_widget(form.customer)}}
+
+		{{form_label(form.startDate)}}
+		<div class="input-group date" data-provide="datepicker">
+				{{form_widget(form.startDate)}}
+			<div class="input-group-addon">
+        	<span class="glyphicon glyphicon-th"></span>
+    		</div>
+		</div>
+
+		{{form_label(form.endDate)}}
+		{{form_widget(form.endDate)}}
+
+		{{form_label(form.room)}}
+		{{form_widget(form.room)}}
+
+		{{form_label(form.comment)}}
+		{{form_widget(form.comment)}}
+
+		{{form_label(form.save)}}
+		{{form_widget(form.save)}}
+
+
+
+
+
+	{{form_end(form)}}
+    <div class="my-3">
+        <p><span id="nbNight">...</span> nuit(s) à <span id="roomPrice">...</span> &euro; pour un total de <span id="total">...</span> &euro;</p>
+    </div>
+{% endblock %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="/css/datepicker.min.css">
+{% endblock %}
+{% block javascripts %}
+	<script src="/js/datepicker.js"></script>
+	<script>
+	// message cacul prix par rapport au nuit
+        const dayDuration = 24 * 60 *60 * 1000;
+
+        let calculate = function () {
+            const startDate = new Date($('#{{form.startDate.vars.id}}').val());
+            const endDate = new Date($('#{{form.endDate.vars.id}}').val());
+            const price = $('#{{form.room.vars.id}} option:selected').attr('data-price');
+            if (price && startDate && endDate && startDate < endDate) {
+                const interval = endDate.getTime() - startDate.getTime();
+                const nbNight = interval / dayDuration;
+                const total = nbNight * price;
+                $('#nbNight').text(nbNight);
+                $('#roomPrice').text(price);
+                $('#total').text(total.toLocaleString('fr-FR'));
+            }
+        }
+        
+        $('#{{form.room.vars.id}}').on('change',calculate);
+        $('#{{form.startDate.vars.id}}').on('change',calculate);
+        $('#{{form.endDate.vars.id}}').on('change',calculate);
+	
+	// datepicker
+	// $('#{{form.startDate.vars.id}}').datepicker({
+	// 	format: 'dd/mm/yyyy',
+	// 	startDate: new Date()
+	// });
+	</script>
+
+{% endblock %}

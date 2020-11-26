@@ -38,7 +38,7 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setEmail($faker->safeEmail)
             ->setPassword($this->encoder->encodePassword($user, 'admin')) //Le code sera encoder dans la bdd
-            ->addRole($userRole);
+            ->addUserRole($userRole);
 
         $manager->persist($user); //Ouvre une transaction avec la BDD
         $manager->flush();
@@ -46,7 +46,7 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setEmail('admin@ex.com')
             ->setPassword($this->encoder->encodePassword($user, 'admin')) //Le code sera encoder dans la bdd
-            ->addRole($userRole);
+            ->addUserRole($userRole);
 
         $manager->persist($user); //Ouvre une transaction avec la BDD
         $manager->flush();
@@ -54,10 +54,12 @@ class UserFixtures extends Fixture
         $user = new User();
         $user->setEmail('user@ex.com')
             ->setPassword($this->encoder->encodePassword($user, 'admin')) //Le code sera encoder dans la bdd
-            ->addRole($userRole)
-            ->addRole($adminRole);
+            ->addUserRole($userRole)
+            ->addUserRole($adminRole);
 
         $manager->persist($user); //Ouvre une transaction avec la BDD
         $manager->flush();
+
+        // $this->
     }
 }

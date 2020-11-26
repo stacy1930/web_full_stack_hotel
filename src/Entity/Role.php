@@ -25,7 +25,7 @@ class Role
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="roles")
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="userRoles")
      */
     private $users;
 
@@ -63,6 +63,7 @@ class Role
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
+            $user->addUserRole($this);
         }
 
         return $this;

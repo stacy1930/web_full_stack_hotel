@@ -22,14 +22,15 @@ class Booking
 
     /**
      * @ORM\Column(type="date")
-     * @Assert\Type("\DateTimeInterface")
+     * @Assert\Date()
      * @Assert\GreaterThan("yesterday", message ="Vous ne pouvez pas rerserver une date passee")
      */
     private $startDate;
 
+    // @Assert\Date() a la place de DateTimeInterface
     /**
      * @ORM\Column(type="date")
-     * @Assert\Type("\DateTimeInterface")
+     * @Assert\Date()
      * @Assert\GreaterThan(propertyPath="startDate", message ="La date de fin doit etre supperieur a la date de debut")
      */
     private $endDate;

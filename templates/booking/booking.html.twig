@@ -1,74 +1,121 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Booking{% endblock %}
+{% block title %}Booking
+{% endblock %}
 
 {% block body %}
-    {# {{ form(form) }} #}
 	{{form_start(form)}}
-		{{form_widget(form.customer)}}
+	{# {{ form(form) }} #}
+	{{form_widget(form.customer)}}
 
-		{{form_label(form.startDate)}}
-		<div class="input-group date" data-provide="datepicker">
-				{{form_widget(form.startDate)}}
-			<div class="input-group-addon">
-        	<span class="glyphicon glyphicon-th"></span>
-    		</div>
+	{{form_label(form.startDate)}}
+
+	<div id="startDate" class="input-group date" data-provide="datepicker">
+		{{form_widget(form.startDate)}}
+		{# <input type="text" class="form-control"> #}
+		<div class="input-group-addon">
+			<span class="glyphicon glyphicon-th"></span>
 		</div>
+	</div>
 
-		{{form_label(form.endDate)}}
+	{{form_label(form.endDate)}}
+	<div id="endDate" class="input-group date" data-provide="datepicker">
 		{{form_widget(form.endDate)}}
+		{# <input type="text" class="form-control"> #}
+		<div class="input-group-addon">
+			<span class="glyphicon glyphicon-th"></span>
+		</div>
+	</div>
 
-		{{form_label(form.room)}}
-		{{form_widget(form.room)}}
+	{{form_label(form.room)}}
+	{{form_widget(form.room)}}
 
-		{{form_label(form.comment)}}
-		{{form_widget(form.comment)}}
+	{{form_label(form.comment)}}
+	{{form_widget(form.comment)}}
 
-		{{form_label(form.save)}}
-		{{form_widget(form.save)}}
-
-
-
-
-
+	{{form_widget(form.save)}}
 	{{form_end(form)}}
-    <div class="my-3">
-        <p><span id="nbNight">...</span> nuit(s) à <span id="roomPrice">...</span> &euro; pour un total de <span id="total">...</span> &euro;</p>
-    </div>
+	<div class="my-3">
+		<p>
+			<span id="nbNight">...</span>
+			nuit(s) à
+			<span id="roomPrice">...</span>
+			&euro; pour un total de
+			<span id="total">...</span>
+			&euro;</p>
+	</div>
 {% endblock %}
 
-{% block stylesheet %}
-<link rel="stylesheet" href="/css/datepicker.min.css">
+{% block stylesheets %}
+	{{parent()}}
+	<link rel="stylesheet" href="/css/datepicker.min.css">
+	<style>
+		.datepicker table tr td.disabled,
+		.datepicker table tr td.disabled:hover {
+			color: red;
+		}
+	</style>
 {% endblock %}
+
 {% block javascripts %}
+	{{parent()}}
 	<script src="/js/datepicker.js"></script>
+	<script src="/js/bootstrap-datepicker.fr.min.js"></script>
 	<script>
-	// message cacul prix par rapport au nuit
-        const dayDuration = 24 * 60 *60 * 1000;
+		// calcul de cout
+const dayDuration = 24 * 60 * 60 * 1000;
 
-        let calculate = function () {
-            const startDate = new Date($('#{{form.startDate.vars.id}}').val());
-            const endDate = new Date($('#{{form.endDate.vars.id}}').val());
-            const price = $('#{{form.room.vars.id}} option:selected').attr('data-price');
-            if (price && startDate && endDate && startDate < endDate) {
-                const interval = endDate.getTime() - startDate.getTime();
-                const nbNight = interval / dayDuration;
-                const total = nbNight * price;
-                $('#nbNight').text(nbNight);
-                $('#roomPrice').text(price);
-                $('#total').text(total.toLocaleString('fr-FR'));
-            }
-        }
-        
-        $('#{{form.room.vars.id}}').on('change',calculate);
-        $('#{{form.startDate.vars.id}}').on('change',calculate);
-        $('#{{form.endDate.vars.id}}').on('change',calculate);
-	
-	// datepicker
-	// $('#{{form.startDate.vars.id}}').datepicker({
-	// 	format: 'dd/mm/yyyy',
-	// 	startDate: new Date()
-	// });
+let calculate = function () { // debugger;
+const startDate = new Date($('#{{form.startDate.vars.id}}').val());
+const endDate = new Date($('#{{form.endDate.vars.id}}').val());
+const price = $('#{{form.room.vars.id}}option:selected').attr('data-price');
+if (price && startDate && endDate && startDate < endDate) {
+const interval = endDate.getTime() - startDate.getTime();
+const nbNight = interval / dayDuration;
+const total = nbNight * price;
+$('#nbNight').text(nbNight);
+$('#roomPrice').text(price);
+$('#total').text(total.toLocaleString('fr-FR'));
+}
+}
+
+let dateIndispoByRoom = function (e) {
+$('#{{form.startDate.vars.id}}').attr("disabled", 'disabled');
+$('#{{form.endDate.vars.id}}').attr("disabled", 'disabled');
+let id = $('#{{form.room.vars.id}}option:selected').val();
+let route = "/admin/booking/unvailable_date/" + id;
+jQuery.ajax({
+url: route,
+type: 'POST',
+success: function (data, statut) {
+console.log(data)
+$('#startDate').datepicker('setDatesDisabled', data)
+$('#endDate').datepicker('setDatesDisabled', data)
+$('#{{form.startDate.vars.id}}').removeAttr("disabled");
+$('#{{form.endDate.vars.id}}').removeAttr("disabled");
+},
+error: function (resultat, statut, erreur) {
+console.log(resultat);
+}
+});
+}
+
+$('#{{form.room.vars.id}}').on('change', dateIndispoByRoom);
+
+$('#{{form.room.vars.id}}').on('change', calculate);
+$('#{{form.startDate.vars.id}}').on('change', calculate);
+$('#{{form.endDate.vars.id}}').on('change', calculate);
+
+// date piker
+$('#startDate, #endDate').datepicker({
+    format: 'yyyy-mm-dd',
+    startDate: new Date(),
+    language: "fr"
+});
+
+$(document).ready(function () {
+dateIndispoByRoom()
+})
 	</script>
 
 {% endblock %}
